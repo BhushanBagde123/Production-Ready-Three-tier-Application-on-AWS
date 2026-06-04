@@ -19,7 +19,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
 
           script: |
-            cd ~/frontend
+            cd /root/form-project/frontend
 
             git pull origin main
 
