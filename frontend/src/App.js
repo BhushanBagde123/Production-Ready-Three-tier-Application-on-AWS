@@ -25,7 +25,6 @@ function App() {
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>Form App</h2>
-  <h1>CI/CD first test</h1>
       <form onSubmit={handleSubmit}>
         <input
           name="name"
@@ -40,7 +39,7 @@ function App() {
         /><br /><br />
 
         <button type="submit">Submit</button>
-        <button type="submit">hello</button>
+        
       </form>
     </div>
   );
