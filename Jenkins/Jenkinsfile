@@ -1,0 +1,56 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Clone') {
+            steps {
+                git branch: 'main',
+                url: 'https://github.com/BhushanBagde123/form-project.git'
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'docker build -t frontend:v1 .'
+                }
+            }
+        }
+
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    sh 'docker build -t backend:v1 .'
+                }
+            }
+        }
+
+        stage('Deploy Frontend') {
+            steps {
+                sh '''
+                docker rm -f frontend || true
+
+                docker run -d \
+                --name frontend \
+                -p 80:80 \
+                frontend:v1
+                '''
+            }
+        }
+
+        stage('Deploy Backend') {
+            steps {
+                sh '''
+                docker rm -f backend || true
+
+                docker run -d \
+                --name backend \
+                -p 5000:5000 \
+                backend:v1
+                '''
+            }
+        }
+    }
+}

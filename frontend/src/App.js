@@ -15,7 +15,7 @@ function App() {
     e.preventDefault();
 
     try {
-      await axios.post("http://<ALB-DNS>/api/submit", form);
+      await axios.post( `${import.meta.env.VITE_API_URL}/api/submit`, form);
       alert("Data submitted!");
     } catch (err) {
       console.log(err);
