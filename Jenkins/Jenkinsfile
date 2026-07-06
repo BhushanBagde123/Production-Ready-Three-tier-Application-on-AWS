@@ -1,56 +1,75 @@
 pipeline {
-
     agent any
+
+    environment {
+        AWS_REGION = 'ap-south-1'
+        AWS_ACCOUNT_ID = 'YOUR_ACCOUNT_ID'
+
+        FRONTEND_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/frontend-ecr"
+        BACKEND_REPO  = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/backend-ecr"
+    }
 
     stages {
 
-        stage('Clone') {
+        stage('Checkout Source') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/BhushanBagde123/form-project.git'
+                    url: 'https://github.com/BhushanBagde123/form-project.git'
             }
         }
 
-        stage('Build Frontend') {
+        stage('Build Frontend Image') {
             steps {
                 dir('frontend') {
-                    sh 'docker build -t frontend:v1 .'
+                    sh 'docker build -t frontend:latest .'
                 }
             }
         }
 
-        stage('Build Backend') {
+        stage('Build Backend Image') {
             steps {
                 dir('backend') {
-                    sh 'docker build -t backend:v1 .'
+                    sh 'docker build -t backend:latest .'
                 }
             }
         }
 
-        stage('Deploy Frontend') {
+        stage('Login to Amazon ECR') {
             steps {
                 sh '''
-                docker rm -f frontend || true
-
-                docker run -d \
-                --name frontend \
-                -p 80:80 \
-                frontend:v1
+                aws ecr get-login-password --region $AWS_REGION | \
+                docker login --username AWS --password-stdin \
+                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
                 '''
             }
         }
 
-        stage('Deploy Backend') {
+        stage('Tag Images') {
             steps {
                 sh '''
-                docker rm -f backend || true
-
-                docker run -d \
-                --name backend \
-                -p 5000:5000 \
-                backend:v1
+                docker tag frontend:latest ${FRONTEND_REPO}:latest
+                docker tag backend:latest ${BACKEND_REPO}:latest
                 '''
             }
+        }
+
+        stage('Push Images to ECR') {
+            steps {
+                sh '''
+                docker push ${FRONTEND_REPO}:latest
+                docker push ${BACKEND_REPO}:latest
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Docker images pushed successfully to Amazon ECR."
+        }
+
+        failure {
+            echo "Pipeline failed."
         }
     }
 }
