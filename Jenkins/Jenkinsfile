@@ -74,20 +74,8 @@ pipeline {
     }
     stage('Deployment') {
     steps {
-        sh '''
-        aws ssm send-command \
-        --document-name "AWS-RunShellScript" \
-        --region  $AWS_REGION \
-        --targets "Key=tag:Name,Values=application" \
-        --parameters 'commands=[
-        "mkdir -p /opt/app",
-        "cd /opt/app",
-        "aws s3 cp s3://appliaction-project-config/docker-compose.yml .",
-        "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin  ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com",
-        "docker compose pull",
-        "docker compose up -d"
-        ]'
-        '''
+        sh 'chmod +x scripts/deploy.sh'
+        sh './scripts/deploy.sh'
     }
 }
 }

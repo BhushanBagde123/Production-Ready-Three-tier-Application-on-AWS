@@ -24,7 +24,7 @@ function App() {
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Form App</h2>
+      <h2>Form App hello</h2>
       <form onSubmit={handleSubmit}>
         <input
           name="name"
