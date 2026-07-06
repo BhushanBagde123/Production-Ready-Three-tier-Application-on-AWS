@@ -3,7 +3,7 @@ version: "3.8"
 services:
 
   frontend:
-    build: ./frontend
+    image: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/frontend-ecr-repo:v1
     container_name: frontend
     restart: always
     ports:
@@ -12,13 +12,13 @@ services:
       - backend
 
   backend:
-    build: ./backend
+    image: ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/backend-ecr-repo:v1
     container_name: backend
     restart: always
     ports:
       - "5000:5000"
-    # environment:
-    #   DB_HOST: your-rds-endpoint.amazonaws.com
-    #   DB_USER: admin
-    #   DB_PASSWORD: password
-    #   DB_NAME: formdb
+    environment:
+      DB_HOST: DB_HOST
+      DB_USER: admin
+      DB_PASSWORD: password
+      DB_NAME: formdb

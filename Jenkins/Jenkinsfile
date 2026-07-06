@@ -3,10 +3,10 @@ pipeline {
 
     environment {
         AWS_REGION = 'ap-south-1'
-        AWS_ACCOUNT_ID = 'YOUR_ACCOUNT_ID'
+        AWS_ACCOUNT_ID = 412664885824
 
-        FRONTEND_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/frontend-ecr"
-        BACKEND_REPO  = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/backend-ecr"
+        FRONTEND_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/frontend-ecr-repo"
+        BACKEND_REPO  = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/backend-ecr-repo"
     }
 
     stages {
@@ -21,7 +21,7 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 dir('frontend') {
-                    sh 'docker build -t frontend:latest .'
+                    sh 'docker build -t frontend:v1 .'
                 }
             }
         }
@@ -29,7 +29,7 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 dir('backend') {
-                    sh 'docker build -t backend:latest .'
+                    sh 'docker build -t backend:v1 .'
                 }
             }
         }
@@ -47,8 +47,8 @@ pipeline {
         stage('Tag Images') {
             steps {
                 sh '''
-                docker tag frontend:latest ${FRONTEND_REPO}:latest
-                docker tag backend:latest ${BACKEND_REPO}:latest
+                docker tag frontend:v1 ${FRONTEND_REPO}:v1
+                docker tag backend:v1 ${BACKEND_REPO}:v1
                 '''
             }
         }
@@ -56,8 +56,8 @@ pipeline {
         stage('Push Images to ECR') {
             steps {
                 sh '''
-                docker push ${FRONTEND_REPO}:latest
-                docker push ${BACKEND_REPO}:latest
+                docker push ${FRONTEND_REPO}:v1
+                docker push ${BACKEND_REPO}:v2
                 '''
             }
         }
@@ -72,4 +72,22 @@ pipeline {
             echo "Pipeline failed."
         }
     }
+    stage('Deployment') {
+    steps {
+        sh '''
+        aws ssm send-command \
+        --document-name "AWS-RunShellScript" \
+        --region  $AWS_REGION \
+        --targets "Key=tag:Name,Values=application" \
+        --parameters 'commands=[
+        "mkdir -p /opt/app",
+        "cd /opt/app",
+        "aws s3 cp s3://appliaction-project-config/docker-compose.yml .",
+        "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin  ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com",
+        "docker compose pull",
+        "docker compose up -d"
+        ]'
+        '''
+    }
+}
 }
