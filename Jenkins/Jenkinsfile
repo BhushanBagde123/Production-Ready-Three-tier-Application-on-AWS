@@ -61,21 +61,22 @@ pipeline {
                 '''
             }
         }
+        stage('Deployment') {
+            steps {
+                sh 'chmod +x scripts/deploy.sh'
+                sh './scripts/deploy.sh'
+    }
+}
     }
 
     post {
         success {
-            echo "Docker images pushed successfully to Amazon ECR."
+            echo "Deployment successfull."
         }
 
         failure {
             echo "Pipeline failed."
         }
     }
-    stage('Deployment') {
-    steps {
-        sh 'chmod +x scripts/deploy.sh'
-        sh './scripts/deploy.sh'
-    }
-}
+    
 }
