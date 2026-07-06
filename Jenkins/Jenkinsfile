@@ -57,7 +57,7 @@ pipeline {
             steps {
                 sh '''
                 docker push ${FRONTEND_REPO}:v1
-                docker push ${BACKEND_REPO}:v2
+                docker push ${BACKEND_REPO}:v1
                 '''
             }
         }
