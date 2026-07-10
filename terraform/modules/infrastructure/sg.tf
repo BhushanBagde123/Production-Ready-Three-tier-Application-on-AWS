@@ -1,39 +1,8 @@
-# Bastion Host SG
-resource "aws_security_group" "bastion_host" {
-  name        = "bastion-host-sg"
-  description = "Allow SSH from allowed CIDRs"
-  vpc_id      = var.vpc_id
 
-  ingress {
-    description = "Allow SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_ssh_cidr
-  }
-  ingress {
-    description = "Allow SSH"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_ssh_cidr
-  }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "bastion-host-sg"
-  }
-}
-
-# ALB Frontend SG
-resource "aws_security_group" "alb_frontend" {
-  name        = "alb-frontend-sg"
+# ALB App SG
+resource "aws_security_group" "alb_app" {
+  name        = "alb_app_sg"
   description = "Allow HTTP/HTTPS from public"
   vpc_id      = var.vpc_id
 
@@ -59,13 +28,13 @@ resource "aws_security_group" "alb_frontend" {
   }
 
   tags = {
-    Name = "alb-frontend-sg"
+    Name = "alb_app_sg"
   }
 }
 
-# ALB Backend SG
-resource "aws_security_group" "alb_backend" {
-  name        = "alb-backend-sg"
+# ALB jenkins SG
+resource "aws_security_group" "alb_jenkins" {
+  name        = "alb_jenkins_sg"
   description = "Allow HTTP/HTTPS for backend"
   vpc_id      = var.vpc_id
 
@@ -91,26 +60,25 @@ resource "aws_security_group" "alb_backend" {
   }
 
   tags = {
-    Name = "alb-backend-sg"
+    Name = "alb_jenkins_sg"
   }
 }
 
-# Frontend Server SG
-resource "aws_security_group" "frontend_server" {
-  name        = "frontend-server-sg"
-  description = "Allow SSH + HTTP for frontend servers"
+# App Server SG
+resource "aws_security_group" "app_sg" {
+  name        = "app_sg"
+  description = " HTTP for alb servers"
   vpc_id      = var.vpc_id
 
   ingress = [
-    for port in [22, 80] : {
+    for port in [ 5000,80] : {
       description      = "Allow SSH/HTTP"
       from_port        = port
       to_port          = port
       protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = []
       prefix_list_ids  = []
-      security_groups  = []
+      security_groups  = [aws_security_group.alb_app.id]
       self             = false
     }
   ]
@@ -123,29 +91,24 @@ resource "aws_security_group" "frontend_server" {
   }
 
   tags = {
-    Name = "frontend-server-sg"
+    Name = "app_sg"
   }
 }
+#jenkins-sg
 
-# Backend Server SG
-resource "aws_security_group" "backend_server" {
-  name        = "backend-server-sg"
-  description = "Allow SSH + HTTP for backend servers"
+resource "aws_security_group" "jenkins_sg" {
+  name        = "jenkins_sg"
+  description = "Allow ALB access"
   vpc_id      = var.vpc_id
 
-  ingress = [
-    for port in [22, 80] : {
-      description      = "Allow SSH/HTTP"
-      from_port        = port
-      to_port          = port
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = []
-      prefix_list_ids  = []
-      security_groups  = []
-      self             = false
-    }
-  ]
+  ingress {
+    description = "ALB"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    security_groups = [aws_security_group.alb_jenkins.id]
+  }
+  
 
   egress {
     from_port   = 0
@@ -155,13 +118,15 @@ resource "aws_security_group" "backend_server" {
   }
 
   tags = {
-    Name = "backend-server-sg"
+    Name = "database_sg"
   }
 }
+
+
 
 # Database SG
 resource "aws_security_group" "database" {
-  name        = "database-sg"
+  name        = "database_sg"
   description = "Allow MySQL access"
   vpc_id      = var.vpc_id
 
@@ -170,8 +135,9 @@ resource "aws_security_group" "database" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # (Better: restrict to backend SG only)
+    security_groups = [aws_security_group.app_sg.id]
   }
+  
 
   egress {
     from_port   = 0
@@ -181,6 +147,6 @@ resource "aws_security_group" "database" {
   }
 
   tags = {
-    Name = "database-sg"
+    Name = "database_sg"
   }
 }

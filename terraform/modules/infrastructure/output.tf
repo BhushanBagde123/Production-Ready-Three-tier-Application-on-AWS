@@ -17,6 +17,9 @@ output "private_app_subnets" {
 output "private_db_subnets" {
   value = [aws_subnet.prvt7.id, aws_subnet.prvt8.id]
 }
+output "private_subnets" {
+  value = aws_subnet.private[*].id
+}
 
 output "igw_id" {
   value = aws_internet_gateway.igw.id
@@ -27,30 +30,21 @@ output "nat_gateway_id" {
 }
 
 
-output "bastion_sg_id" {
-  description = "ID of the Bastion Host SG"
-  value       = aws_security_group.bastion_host.id
-}
 
-output "alb_frontend_sg_id" {
+
+output "alb_app_sg_id" {
   description = "ID of the Frontend ALB SG"
-  value       = aws_security_group.alb_frontend.id
+  value       = aws_security_group.alb_app
 }
 
-output "alb_backend_sg_id" {
-  description = "ID of the Backend ALB SG"
-  value       = aws_security_group.alb_backend.id
-}
 
-output "frontend_server_sg_id" {
+
+output "app_sg_id" {
   description = "ID of the Frontend Server SG"
-  value       = aws_security_group.frontend_server.id
+  value       = aws_security_group.app_sg
 }
 
-output "backend_server_sg_id" {
-  description = "ID of the Backend Server SG"
-  value       = aws_security_group.backend_server.id
-}
+
 
 output "database_sg_id" {
   description = "ID of the Database SG"

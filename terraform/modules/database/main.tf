@@ -1,11 +1,4 @@
 
-# data "aws_security_group" "rds_sg" {
-#   filter {
-#     name   = "tag:Name"
-#     values = ["book-rds-sg"]
-#   }
-# }
-
 
 # --------------------------
 # RDS Subnet Group

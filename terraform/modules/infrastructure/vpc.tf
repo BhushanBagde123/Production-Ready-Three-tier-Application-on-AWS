@@ -32,14 +32,15 @@ resource "aws_subnet" "pub2" {
   }
 }
 
-# ----------------- Private Web Subnets -----------------
+
+# ----------------- Private App Subnets -----------------
 resource "aws_subnet" "prvt3" {
   vpc_id            = aws_vpc.three_tier.id
   cidr_block        = var.private_subnet_1_cidr
   availability_zone = var.availability_zone_1a
 
   tags = {
-    Name = "${var.vpc_name}-private-web-1"
+    Name = "${var.vpc_name}-private-app-1"
   }
 }
 
@@ -49,35 +50,14 @@ resource "aws_subnet" "prvt4" {
   availability_zone = var.availability_zone_1b
 
   tags = {
-    Name = "${var.vpc_name}-private-web-2"
-  }
-}
-
-# ----------------- Private App Subnets -----------------
-resource "aws_subnet" "prvt5" {
-  vpc_id            = aws_vpc.three_tier.id
-  cidr_block        = var.private_subnet_3_cidr
-  availability_zone = var.availability_zone_1a
-
-  tags = {
-    Name = "${var.vpc_name}-private-app-1"
-  }
-}
-
-resource "aws_subnet" "prvt6" {
-  vpc_id            = aws_vpc.three_tier.id
-  cidr_block        = var.private_subnet_4_cidr
-  availability_zone = var.availability_zone_1b
-
-  tags = {
     Name = "${var.vpc_name}-private-app-2"
   }
 }
 
 # ----------------- Private DB Subnets -----------------
-resource "aws_subnet" "prvt7" {
+resource "aws_subnet" "prvt5" {
   vpc_id            = aws_vpc.three_tier.id
-  cidr_block        = var.private_subnet_5_cidr
+  cidr_block        = var.private_subnet_3_cidr
   availability_zone = var.availability_zone_1a
 
   tags = {
@@ -85,9 +65,9 @@ resource "aws_subnet" "prvt7" {
   }
 }
 
-resource "aws_subnet" "prvt8" {
+resource "aws_subnet" "prvt6" {
   vpc_id            = aws_vpc.three_tier.id
-  cidr_block        = var.private_subnet_6_cidr
+  cidr_block        = var.private_subnet_4_cidr
   availability_zone = var.availability_zone_1b
 
   tags = {
@@ -157,12 +137,10 @@ resource "aws_route_table" "private_rt" {
 
 resource "aws_route_table_association" "private" {
   for_each = {
-    web-1      = aws_subnet.prvt3.id
-    web-2      = aws_subnet.prvt4.id
-    app-1      = aws_subnet.prvt5.id
-    app-2      = aws_subnet.prvt6.id
-    database-1 = aws_subnet.prvt7.id
-    database-2 = aws_subnet.prvt8.id
+    app-1      = aws_subnet.prvt3.id
+    app-2      = aws_subnet.prvt4.id
+    database-1 = aws_subnet.prvt5.id
+    database-2 = aws_subnet.prvt6.id
   }
 
   subnet_id      = each.value
