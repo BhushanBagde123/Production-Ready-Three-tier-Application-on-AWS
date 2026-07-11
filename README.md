@@ -8,7 +8,8 @@ The infrastructure is designed following AWS best practices, including public an
 
 ## 🌐 Architecture
 
-![Architecture](three-tier architecture1.png)
+
+![AWS Architecture](images/three-tier%20architecture1.png)
 
 
 ---
