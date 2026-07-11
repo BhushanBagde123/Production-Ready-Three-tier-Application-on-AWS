@@ -34,14 +34,14 @@ output "nat_gateway_id" {
 
 output "alb_app_sg_id" {
   description = "ID of the Frontend ALB SG"
-  value       = aws_security_group.alb_app
+  value       = aws_security_group.alb_app.id
 }
 
 
 
 output "app_sg_id" {
   description = "ID of the Frontend Server SG"
-  value       = aws_security_group.app_sg
+  value       = aws_security_group.app_sg.id
 }
 
 
@@ -49,4 +49,12 @@ output "app_sg_id" {
 output "database_sg_id" {
   description = "ID of the Database SG"
   value       = aws_security_group.database.id
+}
+output "jenkins_sg_id" {
+  description = "ID of the Database SG"
+  value       = aws_security_group.jenkins_sg.id
+}
+output "alb_jenkins_sg_id" {
+  description = "ID of the Database SG"
+  value       = aws_security_group.alb_jenkins.id
 }

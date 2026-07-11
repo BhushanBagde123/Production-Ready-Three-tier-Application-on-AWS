@@ -1,6 +1,6 @@
 resource "aws_launch_template" "app_lt" {
 
-  name_prefix   = "application-"
+  name_prefix   = "application"
   image_id      = var.ami
   instance_type = var.instance_type
 
