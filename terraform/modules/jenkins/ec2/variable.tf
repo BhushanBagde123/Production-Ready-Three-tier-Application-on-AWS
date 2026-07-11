@@ -6,8 +6,8 @@ variable "instance_type" {
   type = string
 }
 
-variable "public_subnet_id" {
-  type = string
+variable "private_web_subnets" {
+  type = list(string)
 }
 
 variable "security_group_id" {

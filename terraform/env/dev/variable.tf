@@ -23,12 +23,7 @@ variable "private_subnet_3_cidr" {
 variable "private_subnet_4_cidr" {
   type =string
 }
-variable "private_subnet_5_cidr" {
-  type =string
-}
-variable "private_subnet_6_cidr" {
-  type =string
-}
+
 variable "availability_zone-1a" {
   type = string
 }

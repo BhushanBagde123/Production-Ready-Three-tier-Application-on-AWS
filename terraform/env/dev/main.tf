@@ -26,17 +26,24 @@ aws_region = var.region
 vpc_id = module.vpc.vpc_id
 subnets = module.vpc.public_subnets
 security_group_id = module.vpc.alb_app_sg_id
-alb_name = "app-alb"
-target_group_name = "app-tg"
+app_alb_name = "app-alb"
+app_target_group_name = "app-tg"
 }
+
 module "jenkins_alb" {
 source = "../../modules/loadbalancer"
 aws_region = var.region
 vpc_id = module.vpc.vpc_id
 subnets = module.vpc.public_subnets
 security_group_id = module.vpc.alb_jenkins_sg_id
-alb_name = "app-alb"
-target_group_name = "app-tg"
+jenkins_alb_name = "jenkins-alb"
+jenkins_target_group_name = "jenkins-tg"
+}
+
+
+module "iam" {
+  source = "../../modules/iam-role"
+  
 }
 
 module "jenkins" {
@@ -44,9 +51,9 @@ module "jenkins" {
   source = "../../modules/jenkins/ec2"
 
   ami                   = var.ami
-  instance_type         = "t2.medium"
+  instance_type         =  var.instance_type
 
-  public_subnet_id      = module.vpc.public_subnets[0]
+  private_web_subnets  = module.vpc.private_web_subnets
 
   security_group_id     = module.vpc.jenkins_sg_id
 
@@ -80,13 +87,13 @@ module "rds" {
 source         = "../../modules/database"
 aws_region   = var.region
 project_name = "three-tier"
-identifier   = "book-rds"
+identifier   = "form-rds"
 allocated_storage = 20
 engine            = "mysql"
 engine_version    = "8.0"
 instance_class    = var.instance_class
 multi_az          = false
-db_name           = "bookdb"
+db_name           = "formDB"
 db_username       = var.db_username
 db_password       = var.db_password
 db_subnet_1_id    = module.vpc.private_db_subnets[0]
@@ -111,6 +118,6 @@ module "autoscaling" {
   source = "../../modules/auto-scaling"
 
   launch_template_id = module.launch_template.launch_template_id
-  target_group_arn   = module.alb.target_group_arn
-  private_subnets    = module.vpc.private_subnet
+  target_group_arn   = module.app_alb.app_target_group_arn
+  private_subnet    = module.vpc.private_web_subnets
 }

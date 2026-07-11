@@ -10,15 +10,8 @@ output "private_web_subnets" {
   value = [aws_subnet.prvt3.id, aws_subnet.prvt4.id]
 }
 
-output "private_app_subnets" {
-  value = [aws_subnet.prvt5.id, aws_subnet.prvt6.id]
-}
-
 output "private_db_subnets" {
-  value = [aws_subnet.prvt7.id, aws_subnet.prvt8.id]
-}
-output "private_subnets" {
-  value = aws_subnet.private[*].id
+  value = [aws_subnet.prvt5.id, aws_subnet.prvt6.id]
 }
 
 output "igw_id" {

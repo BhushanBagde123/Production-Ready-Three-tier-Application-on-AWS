@@ -6,19 +6,22 @@ resource "aws_security_group" "alb_app" {
   description = "Allow HTTP/HTTPS from public"
   vpc_id      = var.vpc_id
 
-  ingress = [
-    for port in [80, 443] : {
-      description      = "Allow HTTP/HTTPS"
-      from_port        = port
-      to_port          = port
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = []
-      prefix_list_ids  = []
-      security_groups  = []
-      self             = false
-    }
-  ]
+    ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 
   egress {
     from_port   = 0
@@ -38,19 +41,22 @@ resource "aws_security_group" "alb_jenkins" {
   description = "Allow HTTP/HTTPS for backend"
   vpc_id      = var.vpc_id
 
-  ingress = [
-    for port in [80, 443] : {
-      description      = "Allow HTTP/HTTPS"
-      from_port        = port
-      to_port          = port
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = []
-      prefix_list_ids  = []
-      security_groups  = []
-      self             = false
-    }
-  ]
+    ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 
   egress {
     from_port   = 0
@@ -70,18 +76,25 @@ resource "aws_security_group" "app_sg" {
   description = " HTTP for alb servers"
   vpc_id      = var.vpc_id
 
-  ingress = [
-    for port in [ 5000,80] : {
-      description      = "Allow SSH/HTTP"
-      from_port        = port
-      to_port          = port
-      protocol         = "tcp"
-      ipv6_cidr_blocks = []
-      prefix_list_ids  = []
-      security_groups  = [aws_security_group.alb_app.id]
-      self             = false
-    }
-  ]
+  
+  # Frontend (Nginx)
+  ingress {
+    description     = "Frontend from ALB"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_app.id]
+  }
+
+  # Backend API
+  ingress {
+    description     = "Backend API from ALB"
+    from_port       = 5000
+    to_port         = 5000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_app.id]
+  }
+
 
   egress {
     from_port   = 0

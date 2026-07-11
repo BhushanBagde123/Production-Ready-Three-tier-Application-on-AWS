@@ -3,30 +3,34 @@ variable "aws_region" {
   type        = string
   default     = ""
 }
-
 variable "vpc_id" {
-  description = "VPC ID for the ALB"
-  type        = string
+  type = string
 }
 
 variable "subnets" {
-  description = "List of public subnet IDs for ALB"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "security_group_id" {
-  description = "Security group ID for the ALB"
-  type        = string
+  type = string
 }
 
-variable "alb_name" {
-  description = "Name of the ALB"
-  type        = string
-  default     = "frontend-alb"
+variable "app_alb_name" {
+  type    = string
+  default = "app-alb"
 }
 
-variable "target_group_name" {
-  description = "Name of the target group"
-  type        = string
-  default     = "frontend-tg"
+variable "jenkins_alb_name" {
+  type    = string
+  default = "jenkins-alb"
+}
+
+variable "app_target_group_name" {
+  type    = string
+  default = "app-tg"
+}
+
+variable "jenkins_target_group_name" {
+  type    = string
+  default = "jenkins-tg"
 }

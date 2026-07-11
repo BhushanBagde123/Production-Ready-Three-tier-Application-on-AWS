@@ -1,22 +1,23 @@
-# output "alb_arn" {
-#   value = aws_lb.front_end.arn
-# }
-
-# output "alb_dns_name" {
-#   value = aws_lb.front_end.dns_name
-# }
-
-# output "alb_target_group_arn" {
-#   value = aws_lb_target_group.front_end.arn
-# }
-output "alb_dns" {
+output "app_alb_dns" {
   value = aws_lb.app_alb.dns_name
 }
 
-output "alb_arn" {
+output "app_alb_arn" {
   value = aws_lb.app_alb.arn
 }
 
-output "target_group_arn" {
+output "jenkins_alb_dns" {
+  value = aws_lb.jenkins_alb.dns_name
+}
+
+output "jenkins_alb_arn" {
+  value = aws_lb.jenkins_alb.arn
+}
+
+output "app_target_group_arn" {
   value = aws_lb_target_group.app_tg.arn
+}
+
+output "jenkins_target_group_arn" {
+  value = aws_lb_target_group.jenkins_tg.arn
 }

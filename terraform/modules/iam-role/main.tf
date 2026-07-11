@@ -28,6 +28,9 @@ resource "aws_iam_role" "application_role" {
   })
 
 }
+
+
+
 #attach manage policy
 
 resource "aws_iam_role_policy_attachment" "ssm" {
@@ -52,6 +55,11 @@ resource "aws_iam_role_policy_attachment" "s3" {
 
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 
+}
+# Application Instance Profile
+resource "aws_iam_instance_profile" "application_profile" {
+  name = "application-profile"
+  role = aws_iam_role.application_role.name
 }
 
 #jenkins role
@@ -85,6 +93,8 @@ resource "aws_iam_role" "jenkins_role" {
 
 }
 
+
+
 resource "aws_iam_role_policy_attachment" "jenkins_ecr" {
 
   role = aws_iam_role.jenkins_role.name
@@ -107,4 +117,9 @@ resource "aws_iam_role_policy_attachment" "jenkins_ssm" {
 
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
 
+}
+# Jenkins Instance Profile
+resource "aws_iam_instance_profile" "jenkins_profile" {
+  name = "jenkins-profile"
+  role = aws_iam_role.jenkins_role.name
 }

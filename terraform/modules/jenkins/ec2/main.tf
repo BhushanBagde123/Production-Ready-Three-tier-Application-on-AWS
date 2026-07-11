@@ -2,12 +2,12 @@ resource "aws_instance" "jenkins" {
 
   ami                         = var.ami
   instance_type               = var.instance_type
-  subnet_id                   = var.public_subnet_id
+  subnet_id                   = var.private_web_subnets[0]
   vpc_security_group_ids       = [var.security_group_id]
   iam_instance_profile         = var.instance_profile_name
   associate_public_ip_address  = false
 
-  user_data = base64encode(<<EOF
+  user_data = <<-EOF
 #!/bin/bash
 
 yum update -y
@@ -38,7 +38,7 @@ systemctl enable jenkins
 systemctl start jenkins
 
 EOF
-)
+
 
   tags = {
     Name = "jenkins"
