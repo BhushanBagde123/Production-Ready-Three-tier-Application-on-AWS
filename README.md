@@ -106,6 +106,50 @@ Application Load Balancer
      ▼
 End Users
 ```
+## 📁 Project Structure
+
+```text
+full-stack-project/
+│
+├── backend/
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── server.js
+│   └── ...
+│
+├── frontend/
+│   ├── Dockerfile
+│   ├── src/
+│   ├── public/
+│   └── ...
+│
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── terraform.tfvars
+│   │
+│   └── modules/
+│       ├── vpc/
+│       ├── security-group/
+│       ├── iam/
+│       ├── alb/
+│       ├── launch-template/
+│       ├── autoscaling/
+│       ├── jenkins/
+│       ├── bastion/
+│       ├── ecr/
+│       ├── s3/
+│       └── rds/
+│
+├── scripts/
+│   └── deploy.sh
+│
+├── docker-compose.yml
+├── Jenkinsfile
+├── .env
+└── README.md
+```
 
 
 
